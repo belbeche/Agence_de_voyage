@@ -1,11 +1,8 @@
 .fond {
-    background: url('../uploads/banner.jpg') no-repeat center center;
-    position: fixed; /* Le fond est fixé en haut de la page */
+    background: url('../../uploads/header.jpg') no-repeat center center;
     width: 100%; /* Il occupe toute la largeur de l'écran */
-    height: 300px; /* On met ici la même hauteur que le jumbotron */
-    top:0;
-    left:0;
-    z-index: -1;
+    height: 100vh; /* On met ici le contenu plein page */
+
    }
    .jumbotron {
     margin-bottom: 0px;

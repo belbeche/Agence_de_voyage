@@ -5,7 +5,7 @@ function getPdo()
 {
     try {
         $db = new PDO(
-            'mysql:host=localhost;dbname=myapp;charset=utf8',
+            'mysql:host=localhost;dbname=hotel;charset=utf8',
             'root',
             '',
             array(
@@ -24,7 +24,7 @@ function getConnection($login, $password)
 {
     // récupération de l'utilisateur depuis la BDD
     $db = getPdo();
-    $req = $db->prepare("SELECT * from users WHERE username = ? and pwd = ?");
+    $req = $db->prepare("SELECT * from user WHERE username = ? and pwd = ?");
     $req->execute(array($login, $password));
 
     // $password = $_POST['password'];
@@ -45,7 +45,7 @@ function login($login, $password)
     $db = getPdo();
     $params = array($login, $password);
     // on vérifie que les données du formulaire sont présentes 
-    $req = "SELECT * from users WHERE username=? and pwd=?";
+    $req = "SELECT * from user WHERE username=? and pwd=?";
     $res = $db->prepare($req);
     $res->execute($params);
     $result = $res->fetch();
@@ -73,7 +73,7 @@ function login($login, $password)
 function getAnnonces()
 {
     $db = getPdo();
-    $reqs = $db->prepare("SELECT * FROM posts INNER JOIN users ON user_id = users.id ORDER BY posts.id DESC");
+    $reqs = $db->prepare("SELECT * FROM chambres INNER JOIN user ON user_id_id = user.id ORDER BY chambres.id DESC");
     $reqs->execute();
     // if ($reqs->rowCount() == 1) {
     //     $posts = $reqs->fetch();
@@ -89,7 +89,7 @@ function getAnnonces()
 function getAnnonce($annonceId)
 {
     $db = getPdo();
-    $posts = $db->prepare("SELECT * FROM posts WHERE user_id = ?");
+    $posts = $db->prepare("SELECT * FROM chambres WHERE user_id_id = ?");
     $posts->execute(array($annonceId));
 
     $result = $posts->fetch();
@@ -100,11 +100,11 @@ function getAnnonce($annonceId)
 
 function getComments($annonceId)
 {
-    $db = getPdo();
-    $comments = $db->prepare("SELECT * FROM comments WHERE post_id = ? ORDER BY comment_date DESC");
-    $comments->execute(array($annonceId));
+    // $db = getPdo();
+    // $comments = $db->prepare("SELECT * FROM comments WHERE post_id = ? ORDER BY comment_date DESC");
+    // $comments->execute(array($annonceId));
 
-    return $comments;
+    // return $comments;
 }
 
 function getCreate()
@@ -112,25 +112,25 @@ function getCreate()
     $db = getPdo();
 
     $titre = null;
-    if (!empty($_POST['title'])) {
-        $titre = $_POST['title'];
+    if (!empty($_POST['titre'])) {
+        $titre = $_POST['titre'];
     }
 
     $content = null;
-    if (!empty($_POST['content'])) {
-        $content = htmlspecialchars($_POST['content']);
+    if (!empty($_POST['contenu'])) {
+        $content = htmlspecialchars($_POST['contenu']);
     }
 
     //    var_dump($titre, $content);  //fonctionnel
 
-    if (isset($_FILES['picture_ads']) /*and $_FILES['picture_ads']['error'] == 0*/) {
+    if (isset($_FILES['image']) /*and $_FILES['picture_ads']['error'] == 0*/) {
         // Testons si le fichier n'est pas trop gros
-        if ($_FILES['picture_ads']['size'] <= 1000000) {
+        if ($_FILES['image']['size'] <= 1000000) {
             // Testons si l'extension est autorisée
-            $infosfichier = pathinfo($_FILES['picture_ads']['tmp_name']);
-            $extension_upload = explode('/', $_FILES['picture_ads']['type']);
+            $infosfichier = pathinfo($_FILES['image']['tmp_name']);
+            $extension_upload = explode('/', $_FILES['image']['type']);
             $extensions_autorisees = array('jpg', 'jpeg', 'gif', 'png');
-            $name = $_FILES['picture_ads']['name'];
+            $name = $_FILES['image']['name'];
             $extension = '';
             foreach ($extension_upload as $check) {
                 if (in_array($check, $extensions_autorisees));
@@ -142,7 +142,7 @@ function getCreate()
                 $req = $db->prepare('INSERT INTO posts (title,content,picture_ads,user_id) VALUES (?, ?, ?, ?) ');
                 $req->execute([$titre, $content, $name, $_SESSION['userID']]);
                 // On peut valider le fichier et le stocker définitivement
-                move_uploaded_file($_FILES['picture_ads']['tmp_name'], './uploads/' . $_FILES['picture_ads']['name']);
+                move_uploaded_file($_FILES['image']['tmp_name'], './uploads/' . $_FILES['image']['name']);
                 // if ($_POST) {
                 //     var_dump($_POST);
                 //     die();
